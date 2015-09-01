@@ -93,16 +93,16 @@ def application(env, start_response):
     lfile = localfile(url)
     # TODO: repomd.xml should expire or we will never get updates again
     lfile_name = lfile.split('/')[-1]
-    if lfile_name in CONFIG['md_files']:
+    if lfile_name in CONFIG['md_files'] and os.path.exists(lfile):
         mtime = os.path.getmtime(lfile)
         now = float(time.strftime('%s'))
-        delta = mtime + 60 * CONFIG['repomd_keep'] - now
+        delta = mtime + 60 * CONFIG['md_keep'] - now
         if delta < 0:
             must_fetch = True
-        log('D: %s mtime=%s now=%s repomd_keep=%s delta=%s '
+        log('D: %s mtime=%s now=%s md_keep=%s delta=%s '
             'must_fetch=%s' %
             (lfile_name, mtime, float(now),
-             60 * float(CONFIG['repomd_keep']), delta, must_fetch))
+             60 * float(CONFIG['md_keep']), delta, must_fetch))
 
     if os.path.isdir(lfile):    # a little safeguard for browser
         start_response('422 Unprocessable Entry',
