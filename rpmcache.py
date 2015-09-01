@@ -19,7 +19,7 @@ import mimetypes
 # from pprint import pformat
 
 CONFIG = {
-    'cache_dir': '/var/cache/rpm-cache',
+    'cache_dir': '/var/cache/rpmcache',
     'log_level': 4,                 # 0 = silence, 4 = debug
     'use_color': True,              # colorized output for terminal
     'md_files': ['repomd.xml'],     # list of metadata files
@@ -108,7 +108,7 @@ def application(env, start_response):
         start_response('422 Unprocessable Entry',
                        [('Content-Type', 'text/plain')])
         return ['Directory listing not supported.\n'
-                'This is rpm-cache, use a proxy= line '
+                'This is rpmcache, use a proxy= line '
                 'in dnf.conf to use it.']
 
     if not os.path.exists(lfile) or must_fetch:
