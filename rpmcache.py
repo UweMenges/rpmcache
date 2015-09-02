@@ -23,7 +23,7 @@ CONFIG = {
     'log_level': 4,                 # 0 = silence, 4 = debug
     'use_color': True,              # colorized output for terminal
     'md_files': ['repomd.xml'],     # list of metadata files
-    'md_keep': 1440,        # how many minutes to cache metadata files
+    'md_keep': 360,         # how many minutes to cache metadata files
     }
 
 
@@ -77,7 +77,14 @@ def get_url(url):
     dest = localfile(url)
     path = '/'.join(dest.split('/')[:-1])
     if not os.path.exists(path):
-        os.makedirs(path)
+        # parallel download of rpms in subdir will create it right now
+        try:
+            os.makedirs(path)
+        except OSError as e:
+            # this catches duplicate creation (so just W not E)
+            # TODO: need to bypass the open() on real errors
+            # like permissions
+            log('W: OS error(%d): %s' % (e.errno, e.strerror)) 
     with open(dest, 'wb') as fil:
         curl.setopt(curl.WRITEFUNCTION, fil.write)
         curl.perform()
@@ -91,7 +98,7 @@ def application(env, start_response):
     url = env.get('REQUEST_URI')
     log("I: GET %s" % url)
     lfile = localfile(url)
-    # TODO: repomd.xml should expire or we will never get updates again
+    # metadata files must expire or we will never get updates again
     lfile_name = lfile.split('/')[-1]
     if lfile_name in CONFIG['md_files'] and os.path.exists(lfile):
         mtime = os.path.getmtime(lfile)
@@ -124,10 +131,11 @@ def application(env, start_response):
     size = os.path.getsize(lfile)
     log("D: size=%s" % size)
     start_response('200 OK', [
-        ('Content-Type', mime_type),
+        ('Content-Type', str(mime_type)),
         ('Content-Length', str(size)),
         ('Content-Encoding', str(encoding)),
-        ('Content-Disposition', 'attachment; filename=' + lfile_name)
+        ('Content-Disposition', 'attachment; filename=' +
+         str(lfile_name))
     ])
     log("I: send file %s" % lfile)
     fil = open(lfile, 'rb')
