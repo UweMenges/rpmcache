@@ -1,8 +1,9 @@
 #!/usr/bin/python
-""" rpmcache - a caching proxy for dnf
+""" rpmcache - cache downloaded packages for other machines in your lan
+
 rpmcache is a caching proxy for rpm packages, to be used as proxy by
 eg. dnf. It should also work for other (eg. deb) packages, the only
-special files are metadata files (config option 'md_files', ege.
+special files are metadata files (config option 'md_files', eg.
 repomd.xml) that are fetched again after a configurable time (config
 option 'md_keep', in minutes) to be able to get updates.
 """
