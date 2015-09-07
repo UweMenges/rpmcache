@@ -11,6 +11,7 @@ option 'md_keep', in minutes) to be able to get updates.
 import os
 import sys
 import time
+import uwsgi
 import pycurl
 # from StringIO import StringIO
 # from cgi import parse_qs, escape
@@ -73,9 +74,21 @@ def localfile(url):
 def get_url(url):
     """Download a file from url to cache_dir."""
     # TODO: set a lock to prevent multiple simultaneous downloads
+    mypid = os.getpid()
+    otherpid = uwsgi.cache_get(url)
+    while otherpid:
+        log('D: pid %d waiting for pid %d to finish downloading %s' %
+            (mypid, otherpid, url))
+        time.sleep(1)
+        otherpid = uwsgi.cache_get(url)
+
+    dest = localfile(url)
+    if os.path.exists(dest):
+        return 200
+
+    uwsgi.cache_set(url, str(mypid))
     curl = pycurl.Curl()
     curl.setopt(curl.URL, url)
-    dest = localfile(url)
     path = '/'.join(dest.split('/')[:-1])
     if not os.path.exists(path):
         # parallel download of rpms in subdir will create it right now
@@ -85,10 +98,11 @@ def get_url(url):
             # this catches duplicate creation (so just W not E)
             # TODO: need to bypass the open() on real errors
             # like permissions
-            log('W: OS error(%d): %s' % (e.errno, e.strerror)) 
+            log('W: OS error(%d): %s' % (e.errno, e.strerror))
     with open(dest, 'wb') as fil:
         curl.setopt(curl.WRITEFUNCTION, fil.write)
         curl.perform()
+    uwsgi.cache_del(url)
     return curl.getinfo(curl.HTTP_CODE)
 
 
