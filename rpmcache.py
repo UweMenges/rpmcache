@@ -73,20 +73,27 @@ def localfile(url):
 
 def get_url(url):
     """Download a file from url to cache_dir."""
-    # TODO: set a lock to prevent multiple simultaneous downloads
+    # set a lock to prevent multiple simultaneous downloads of the same
+    # file
     mypid = os.getpid()
+    uwsgi.lock()
     otherpid = uwsgi.cache_get(url)
-    while otherpid:
-        log('D: pid %d waiting for pid %d to finish downloading %s' %
-            (mypid, otherpid, url))
-        time.sleep(1)
-        otherpid = uwsgi.cache_get(url)
+    if otherpid:
+        uwsgi.unlock()
+        while otherpid:
+            log('D: pid %d waiting for pid %d to download %s' %
+                (mypid, otherpid, url))
+            time.sleep(1)
+            otherpid = uwsgi.cache_get(url)
+    else:
+        uwsgi.cache_set(url, str(mypid))
+        uwsgi.unlock()
+        log('D: pid %d downloading %s' % (mypid, url))
 
     dest = localfile(url)
     if os.path.exists(dest):
         return 200
 
-    uwsgi.cache_set(url, str(mypid))
     curl = pycurl.Curl()
     curl.setopt(curl.URL, url)
     path = '/'.join(dest.split('/')[:-1])
