@@ -81,19 +81,17 @@ def get_url(url):
     if otherpid:
         uwsgi.unlock()
         while otherpid:
-            log('D: pid %d waiting for pid %d to download %s' %
+            log('D: pid %d waiting for pid %s to download %s' %
                 (mypid, otherpid, url))
             time.sleep(1)
             otherpid = uwsgi.cache_get(url)
+        return 200
     else:
         uwsgi.cache_set(url, str(mypid))
         uwsgi.unlock()
-        log('D: pid %d downloading %s' % (mypid, url))
 
     dest = localfile(url)
-    if os.path.exists(dest):
-        return 200
-
+    log('D: pid %d downloading %s' % (mypid, url))
     curl = pycurl.Curl()
     curl.setopt(curl.URL, url)
     path = '/'.join(dest.split('/')[:-1])
