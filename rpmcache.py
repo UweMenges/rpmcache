@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """ rpmcache - cache downloaded packages for other machines in your lan
 
 rpmcache is a caching proxy for rpm packages, to be used as proxy by
