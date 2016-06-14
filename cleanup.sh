@@ -1,5 +1,7 @@
 #!/bin/bash
-# dnf repomanag can't handle rpm in subdirs properly, so we need to call
+# TODO: implement cleanup in rpmcache.py
+
+# dnf repomanage can't handle rpm in subdirs properly, so we need to call
 # it separately for every dir containing .rpm files
 for dir in $(find . -type f -name \*.rpm -exec dirname {} + | sort -u); do
     rpmfile=($(dnf repomanage -o "$dir"))
