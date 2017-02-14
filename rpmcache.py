@@ -116,7 +116,9 @@ def application(env, start_response):
     # log("D: env=%s" % pformat(env.items()))
     must_fetch = False
     url = env.get('REQUEST_URI')
-    log("I: GET %s" % url)
+    log("I: client %s (%s) GET %s" % (env.get('REMOTE_ADDR'),
+                                      env.get('HTTP_USER_AGENT'),
+                                      url))
     lfile = localfile(url)
     # metadata files must expire or we will never get updates again
     lfile_name = lfile.split('/')[-1]
