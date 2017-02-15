@@ -81,7 +81,7 @@ def get_url(url):
     if otherpid:
         uwsgi.unlock()
         while otherpid:
-            log('D: pid %d waiting for pid %s to download %s' %
+            log('D: [%d] waiting for pid %s to download %s' %
                 (mypid, otherpid, url))
             time.sleep(1)
             otherpid = uwsgi.cache_get(url)
@@ -91,7 +91,7 @@ def get_url(url):
         uwsgi.unlock()
 
     dest = localfile(url)
-    log('D: pid %d downloading %s' % (mypid, url))
+    log('D: [%d] downloading %s to %s' % (mypid, url, dest))
     curl = pycurl.Curl()
     curl.setopt(curl.URL, url)
     path = '/'.join(dest.split('/')[:-1])
@@ -103,7 +103,8 @@ def get_url(url):
             # this catches duplicate creation (so just W not E)
             # TODO: need to bypass the open() on real errors
             # like permissions
-            log('W: OS error(%d): %s' % (e.errno, e.strerror))
+            log('W: [%d] OS error(%d): %s' %
+                (mypid, e.errno, e.strerror))
     with open(dest, 'wb') as fil:
         curl.setopt(curl.WRITEFUNCTION, fil.write)
         curl.perform()
@@ -143,8 +144,15 @@ def application(env, start_response):
     if not os.path.exists(lfile) or must_fetch:
         log("W: fetching %s" % lfile)
         response = get_url(url)
-        log("D: response=%s" % response)
-        # TODO: handle response
+        if response == 404:
+            log("E: response=%s for %s" % (response, url))
+            start_response('404 NOT FOUND',
+                           [('Content-Type', 'text/plain')])
+            os.unlink(localfile(url))
+            # TODO: try other mirror?
+            return ['Not found']
+        else:
+            log("D: response=%s" % response)
     else:
         log("I: cache hit %s" % lfile)
 
