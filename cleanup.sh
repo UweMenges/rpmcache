@@ -18,3 +18,11 @@ for dir in $(find . -type d -name repodata); do
 	fi
     done; cd -; }
 done
+
+# remove 404 html files we got from old metadata queries
+find /var/cache/rpmcache/ -type f -size -2k -exec file {} + \
+    | grep HTML \
+    | while read file rest; do
+	echo ${file%:}
+      done \
+    | xargs rm -v
