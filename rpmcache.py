@@ -100,6 +100,7 @@ def get_url(url):
     log('D: [%d] downloading %s to %s' % (mypid, url, dest))
     curl = pycurl.Curl()
     curl.setopt(curl.URL, url)
+    curl.setopt(curl.FOLLOWLOCATION, True)
     path = '/'.join(dest.split('/')[:-1])
     if not os.path.exists(path):
         # parallel download of rpms in subdir will create it right now
