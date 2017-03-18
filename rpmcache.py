@@ -24,7 +24,13 @@ CONFIG = {
     'cache_dir': '/var/cache/rpmcache',
     'log_level': 4,                 # 0 = silence, 4 = debug
     'use_color': True,              # colorized output for terminal
-    'md_files': ['repomd.xml'],     # list of metadata files
+    'md_files': [                   # list of metadata files
+        'repomd.xml',               # main repo metadata file
+        # Fedora uses $id-{filelists,primary}.xml.gz (==> needs cleanup)
+        # Google doesn't use an id
+        'filelists.xml.gz',         # needed for google-chrome repo
+        'primary.xml.gz',           # needed for google-chrome repo
+        ],
     'md_keep': 360,         # how many minutes to cache metadata files
     }
 
