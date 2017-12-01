@@ -28,13 +28,24 @@ $ . bin/activate
 
 ## Running uwsgi with systemd
 
-Create user for rpmcache:
+See also http://uwsgi-docs.readthedocs.io/en/latest/Systemd.html, but I
+prefer to run it directly.
+
+Create user for rpmcache, make cache dir, switch user, clone repo,
+create virtualenv and install:
 ```
-# useradd rpmcache -M -d /var/cache/rpmcache -r -s /sbin/nologin
+# useradd -c 'rpmcache user' -m -r -s /sbin/nologin rpmcache 
+# install -d -m 775 -g rpmcache -o rpmcache /var/cache/rpmcache
+# su rpmcache -s /bin/bash -l
+$ git clone https://github.com/UweMenges/rpmcache.git
+$ cd rpmcache
+$ virtualenv .
+$ . bin/activate
+(rpmcache)$ pip install --upgrade -r requirements.txt
+(rpmcache)$ exit
 ```
 
-Install and enable the systemd unit file, see also
-http://uwsgi-docs.readthedocs.io/en/latest/Systemd.html
+Install and enable the systemd unit file:
 ```
 # cp rpmcache.service /etc/systemd/system/
 # systemctl install rpmcache
