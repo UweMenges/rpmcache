@@ -11,19 +11,19 @@ option 'md_keep', in minutes) to be able to get updates.
 import os
 import sys
 import time
+import mimetypes
 import uwsgi
 import pycurl
 # from StringIO import StringIO
 # from cgi import parse_qs, escape
-import mimetypes
 
 # just for testing/debugging
 # from pprint import pformat
 
 CONFIG = {
     'cache_dir': '/var/cache/rpmcache',
-    'log_level': 4,                 # 0 = silence, 4 = debug
-    'use_color': True,              # colorized output for terminal
+    'log_level': 3,                 # 0 = silence, 4 = debug
+    'use_color': False,              # colorized output for terminal
     'md_files': [                   # list of metadata files
         'repomd.xml',               # main repo metadata file
         # Fedora uses $id-{filelists,primary}.xml.gz (==> needs cleanup)
@@ -79,8 +79,7 @@ def localfile(url):
 
 def get_url(url):
     """Download a file from url to cache_dir."""
-    # set a lock to prevent multiple simultaneous downloads of the same
-    # file
+    # set a lock to prevent multiple simultaneous downloads of the same file
     mypid = os.getpid()
     uwsgi.lock()
     otherpid = uwsgi.cache_get(url)

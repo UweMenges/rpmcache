@@ -26,6 +26,33 @@ $ . bin/activate
 (rpmcache)$ uwsgi uwsgi.ini
 ```
 
+## Running uwsgi with systemd
+
+Create user for rpmcache:
+```
+# useradd rpmcache -M -d /var/cache/rpmcache -r -s /sbin/nologin
+```
+
+Install and enable the systemd unit file, see also
+http://uwsgi-docs.readthedocs.io/en/latest/Systemd.html
+```
+# cp rpmcache.service /etc/systemd/system/
+# systemctl install rpmcache
+# systemctl enable rpmcache
+```
+
+### SELinux
+
+Create and install the policy file:
+```
+# checkmodule -M -m -o rpmcache.mod rpmcache.te
+# semodule_package -o rpmcache.pp -m rpmcache.mod
+# semodule -X 300 -i rpmcache.pp
+```
+
+Start rpmcache: `systemctl start rpmcache`
+
+
 ## Client configuration
 
 I put this in /etc/dnf/dnf.conf of every client:

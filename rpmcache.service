@@ -1,0 +1,20 @@
+# /etc/systemd/system/rpmcache.service
+[Unit]
+Description=RPM Cache
+Documentation=https://github.com/UweMenges/rpmcache
+After=network.target
+ConditionPathExists=/var/cache/rpmcache
+ 
+[Service]
+User=rpmcache
+WorkingDirectory=/home/rpmcache/rpmcache
+ExecStart=/home/rpmcache/rpmcache/bin/uwsgi uwsgi.ini
+PrivateTmp=yes
+Type=notify
+#KillSignal=SIGQUIT
+SyslogIdentifier=rpmcache
+StandardError=journal
+NotifyAccess=all
+ 
+[Install]
+WantedBy=multi-user.target 
