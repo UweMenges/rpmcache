@@ -13,7 +13,7 @@ For running standalone uwsgi in a virtualenv with pip, these packages
 are required:
 
 ```
-# dnf install python-virtualenv python-pip gcc libcurl-devel
+# dnf install python3-virtualenv python-pip gcc libcurl-devel
 ```
 
 ## Running standalone uwsgi
@@ -41,6 +41,7 @@ $ git clone https://github.com/UweMenges/rpmcache.git
 $ cd rpmcache
 $ virtualenv .
 $ . bin/activate
+(rpmcache)$ export PYCURL_SSL_LIBRARY=openssl
 (rpmcache)$ pip install --upgrade -r requirements.txt
 (rpmcache)$ exit
 ```
@@ -48,7 +49,6 @@ $ . bin/activate
 Install and enable the systemd unit file:
 ```
 # cp rpmcache.service /etc/systemd/system/
-# systemctl install rpmcache
 # systemctl enable rpmcache
 ```
 
