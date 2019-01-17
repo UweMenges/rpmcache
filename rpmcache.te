@@ -7,7 +7,17 @@ require {
 	type init_t;
 	type http_port_t;
 	type ephemeral_port_t;
-	class file { create execute execute_no_trans map open read write unlink };
+	class file {
+		create
+		execute
+		execute_no_trans
+		ioctl
+		map
+		open
+		read
+		unlink
+		write
+	};
 	class lnk_file { getattr read };
 	class dir create;
 	class tcp_socket name_connect;
@@ -23,4 +33,4 @@ allow init_t http_port_t:tcp_socket name_connect;
 allow init_t user_home_t:file { execute execute_no_trans map open read };
 allow init_t user_home_t:lnk_file { getattr read };
 allow init_t var_t:dir create;
-allow init_t var_t:file { create open read write unlink};
+allow init_t var_t:file { create ioctl open read unlink write };
