@@ -77,6 +77,16 @@ deltarpm=0
 I also have that on the server, but with http://localhost:8090. I disable
 deltarpm because LAN speed is fast enough and outweighs deltarpm effort.
 
+As rpmcache only works for unencrypted requests, the `.repo` files need
+to be adjusted. For lazyness, this can be done with `sed` on the default
+Fedora `.repo` files:
+
+```
+# cd /etc/yum.repos.d/
+# sed -i 's/^metalink/#&/g; s/^#baseurl/baseurl/g' *.repo
+```
+
+
 ## Troubleshooting
 
 On running uwsgi, there can be the error
