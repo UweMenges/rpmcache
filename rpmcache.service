@@ -12,6 +12,7 @@ ExecStart=/home/rpmcache/rpmcache/bin/uwsgi uwsgi.ini
 PrivateTmp=yes
 Type=notify
 #KillSignal=SIGQUIT
+RestartSec=2
 SyslogIdentifier=rpmcache
 StandardError=journal
 NotifyAccess=all
