@@ -23,13 +23,16 @@ import pycurl
 CONFIG = {
     'cache_dir': '/var/cache/rpmcache',
     'log_level': 3,                 # 0 = silence, 4 = debug
-    'use_color': False,              # colorized output for terminal
+    'use_color': False,             # colorized output for terminal
     'md_files': [                   # list of metadata files
         'repomd.xml',               # main repo metadata file
         # Fedora uses $id-{filelists,primary}.xml.gz (==> needs cleanup)
         # Google doesn't use an id
         'filelists.xml.gz',         # needed for google-chrome repo
         'primary.xml.gz',           # needed for google-chrome repo
+        # .deb based distros, probably incomplete
+        'InRelease',                # file with hashes and other md_files
+        'Packages.xz',              # package list
         ],
     'md_keep': 360,         # how many minutes to cache metadata files
     }
