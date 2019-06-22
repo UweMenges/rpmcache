@@ -32,6 +32,7 @@ CONFIG = {
         'primary.xml.gz',           # needed for google-chrome repo
         # .deb based distros, probably incomplete
         'InRelease',                # file with hashes and other md_files
+        'Packages.gz',              # package list
         'Packages.xz',              # package list
         ],
     'md_keep': 360,         # how many minutes to cache metadata files
